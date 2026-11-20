@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dengue Watch BD | Surveillance Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="#"><span class="brand-icon">+</span><span>DENGUE<span class="brand-light">WATCH</span><small>BANGLADESH</small></span></a>
+    <div class="side-label">WORKSPACE</div>
+    <a class="nav active" href="#overview">▦ <span>Overview</span></a>
+    <a class="nav" href="#districts">⌖ <span>District statistics</span></a>
+    <a class="nav" href="#reports">▤ <span>Case reports</span></a>
+    <a class="nav" href="#prediction">⌁ <span>Risk outlook</span></a>
+    <div class="sidebar-bottom"><div class="live-dot"></div><span>Local demo environment</span></div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div><div class="eyebrow">BANGLADESH / PUBLIC HEALTH</div><h1>Dengue Surveillance</h1><p class="sub">Monitor reported cases, district trends and estimated risk.</p></div>
+      <div class="top-actions"><span class="date-chip" id="todayLabel">● Live dashboard</span><button class="primary-btn" onclick="scrollToForm()">＋ Add report</button></div>
+    </header>
+
+    <section class="notice"><strong>DEMO DATA</strong><span>Numbers currently shown are illustrative sample data, not official statistics. Replace them with verified reports before public use.</span></section>
+
+    <section id="overview">
+      <div class="section-heading"><div><h2>National overview</h2><p>Combined totals from records currently stored in this demo database.</p></div><span class="muted" id="lastUpdated">Updating…</span></div>
+      <div class="stats-grid">
+        <article class="stat-card"><div class="stat-top"><span>Total reported cases</span><span class="stat-icon red">＋</span></div><strong id="totalAffected">—</strong><small>Reported affected cases</small></article>
+        <article class="stat-card"><div class="stat-top"><span>Total deaths</span><span class="stat-icon dark">✚</span></div><strong id="totalDeaths">—</strong><small>Reported deaths</small></article>
+        <article class="stat-card"><div class="stat-top"><span>Recovered</span><span class="stat-icon green">✓</span></div><strong id="totalRecovered">—</strong><small>Reported recoveries</small></article>
+        <article class="stat-card"><div class="stat-top"><span>Active cases</span><span class="stat-icon amber">⌁</span></div><strong id="totalActive">—</strong><small>Calculated from entered records</small></article>
+      </div>
+    </section>
+
+    <section class="content-grid">
+      <article class="panel chart-panel"><div class="panel-head"><div><h3>District case comparison</h3><p>Reported affected cases by district</p></div><span class="tiny-tag">DISTRICT VIEW</span></div><canvas id="districtChart"></canvas></article>
+      <article class="panel map-panel"><div class="panel-head"><div><h3>Bangladesh map</h3><p>Approximate district locations</p></div><span class="tiny-tag">MAP</span></div><div id="map"></div></article>
+    </section>
+
+    <section id="districts" class="panel table-panel">
+      <div class="panel-head"><div><h3>District statistics</h3><p>Ranked by total reported affected cases</p></div><input id="districtSearch" class="search" placeholder="Search district…" /></div>
+      <div class="table-wrap"><table><thead><tr><th>District</th><th>Affected</th><th>Deaths</th><th>Recovered</th><th>Active</th><th>Last update</th></tr></thead><tbody id="districtRows"></tbody></table></div>
+    </section>
+
+    <section id="prediction" class="content-grid lower-grid">
+      <article class="panel prediction-panel"><div class="panel-head"><div><h3>Four-week risk outlook</h3><p>Demonstration index based on recent entered reports</p></div><span class="tiny-tag">ESTIMATE</span></div>
+        <div class="risk-content"><div class="risk-score"><strong id="riskPercent">—</strong><span>illustrative<br>risk index</span></div><div><span id="riskLevel" class="risk-pill">Loading</span><p id="riskText" class="risk-copy">Loading risk information…</p></div></div>
+        <div class="disclaimer">This is not an individual's probability of infection and is not a validated public-health forecast.</div>
+      </article>
+      <article class="panel forecast-panel"><div class="panel-head"><div><h3>Illustrative trend</h3><p>Estimated case-count direction, not confirmed cases</p></div></div><canvas id="forecastChart"></canvas></article>
+    </section>
+
+    <section id="reports" class="panel table-panel">
+      <div class="panel-head"><div><h3>Recent case reports</h3><p>Review and manage submitted records</p></div><input id="reportSearch" class="search" placeholder="Search area or district…" /></div>
+      <div class="table-wrap"><table><thead><tr><th>Date</th><th>District</th><th>Area</th><th>Affected</th><th>Deaths</th><th>Actions</th></tr></thead><tbody id="reportRows"></tbody></table></div>
+    </section>
+
+    <section id="manage" class="panel form-panel">
+      <div class="panel-head"><div><h3 id="formTitle">Add a case report</h3><p>Enter verified information. This demo has no login or role protection.</p></div><span class="tiny-tag">DATA MANAGEMENT</span></div>
+      <form id="reportForm">
+        <input type="hidden" id="reportId">
+        <label>District<input id="district" required placeholder="e.g. Chattogram"></label>
+        <label>Area / Upazila<input id="area" required placeholder="e.g. Panchlaish"></label>
+        <label>Report date<input id="reportDate" type="date" required></label>
+        <label>Affected cases<input id="affected" type="number" min="0" required></label>
+        <label>Deaths<input id="deaths" type="number" min="0" required></label>
+        <label>Recovered<input id="recovered" type="number" min="0" required></label>
+        <label class="wide">Data source<input id="source" placeholder="e.g. Official health bulletin / source URL"></label>
+        <label class="wide">Notes<textarea id="notes" rows="2" placeholder="Optional context"></textarea></label>
+        <div class="form-actions wide"><button class="primary-btn" type="submit" id="submitBtn">Save report</button><button class="secondary-btn" type="button" onclick="resetForm()">Clear</button><span id="formMessage"></span></div>
+      </form>
+    </section>
+    <footer> DENGUE WATCH BD <span>Surveillance dashboard · Local development build</span></footer>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
