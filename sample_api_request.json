@@ -1,0 +1,10 @@
+{
+  "district": "Chattogram",
+  "area": "Panchlaish",
+  "report_date": "2026-11-20",
+  "affected": 35,
+  "deaths": 1,
+  "recovered": 28,
+  "source": "Verified source name",
+  "notes": "Example request body only"
+}
